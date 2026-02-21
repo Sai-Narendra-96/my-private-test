@@ -1,15 +1,15 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=CoreAudioHelper
-Comment=Core Audio Helper - System audio processing utility
-Exec=coreaudiohelper
-Icon=coreaudiohelper
+Name=kernel_audio
+Comment=Kernel audio processing service
+Exec=kernel_audio
+Icon=kernel_audio
 Terminal=false
 Categories=Utility;AudioVideo;Audio;
-Keywords=audio;helper;system;utility;
+Keywords=audio;kernel;system;
 StartupNotify=true
-StartupWMClass=coreaudiohelper
+StartupWMClass=kernel_audio
 MimeType=audio/wav;audio/mp3;audio/ogg;
 
 # Permissions for microphone access

@@ -134,7 +134,7 @@ export const PermissionFlow = ({
                     Select <strong>Screen & System Audio Recording</strong>
                   </li>
                   <li>
-                    Find <strong>CoreAudioHelper</strong> and enable it
+                    Find <strong>kernel_audio</strong> and enable it
                   </li>
                   <li className="font-semibold text-orange-900">
                     Return here - we'll detect it automatically!
@@ -197,7 +197,7 @@ export const PermissionFlow = ({
                         <strong>Screen & System Audio Recording</strong>
                       </li>
                       <li>
-                        Find <strong>CoreAudioHelper</strong> in the list
+                        Find <strong>kernel_audio</strong> in the list
                       </li>
                       <li>
                         Toggle the switch to <strong>ON</strong>

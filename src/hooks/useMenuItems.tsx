@@ -81,7 +81,7 @@ export const useMenuItems = () => {
           {
             icon: MailIcon,
             label: "Contact Support",
-            href: "mailto:support@coreaudiohelper.com",
+            href: "mailto:support@kernel-audio.com",
           },
         ]
       : []),

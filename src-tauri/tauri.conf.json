@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "CoreAudioHelper",
+  "productName": "kernel_audio",
   "version": "0.1.8",
-  "identifier": "com.apple.audio.helper",
+  "identifier": "com.apple.audio.kernel",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "macOSPrivateApi": true,
     "windows": [
       {
-        "title": "CoreAudioHelper",
+        "title": "kernel_audio",
         "width": 600,
         "height": 54,
         "decorations": false,
@@ -43,7 +43,7 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
-    "resources": ["info.plist", "coreaudiohelper.desktop"],
+    "resources": ["info.plist", "kernel_audio.desktop"],
     "macOS": { "minimumSystemVersion": "10.13" }
   },
   "plugins": {

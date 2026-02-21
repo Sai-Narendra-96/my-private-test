@@ -19,7 +19,7 @@ const osInstructions: Record<string, Instructions> = {
     buttonText: "Open System Settings",
     manualTitle: "If permission is not granted automatically:",
     manualSteps:
-      "1. Go to System Settings > Privacy & Security > Screen & System Audio Recording.\n2. Find CoreAudioHelper in the list and enable it, if not found then click on + and add CoreAudioHelper.",
+      "1. Go to System Settings > Privacy & Security > Screen & System Audio Recording.\n2. Find kernel_audio in the list and enable it, if not found then click on + and add kernel_audio.",
     note: "A restart may be required after granting permission.",
   },
   windows: {
