@@ -5,7 +5,8 @@ export const SPEECH_TO_TEXT_PROVIDERS = [
     curl: `curl -X POST "https://api.openai.com/v1/audio/transcriptions" \\
       -H "Authorization: Bearer {{API_KEY}}" \\
       -F "file={{AUDIO}}" \\
-      -F "model={{MODEL}}"`,
+      -F "model={{MODEL}}" \\
+      -F "language=en"`,
     responseContentPath: "text",
     streaming: false,
   },
@@ -28,7 +29,8 @@ export const SPEECH_TO_TEXT_PROVIDERS = [
     curl: `curl -X POST "https://api.elevenlabs.io/v1/speech-to-text" \\
       -H "xi-api-key: {{API_KEY}}" \\
       -F "file={{AUDIO}}" \\
-      -F "model_id={{MODEL}}"`,
+      -F "model_id={{MODEL}}" \\
+      -F "language_code=en"`,
     responseContentPath: "text",
     streaming: false,
   },
@@ -55,7 +57,7 @@ export const SPEECH_TO_TEXT_PROVIDERS = [
   {
     id: "deepgram-stt",
     name: "Deepgram Speech-to-Text",
-    curl: `curl -X POST "https://api.deepgram.com/v1/listen?model={{MODEL}}" \\
+    curl: `curl -X POST "https://api.deepgram.com/v1/listen?model={{MODEL}}&language=en" \\
       -H "Authorization: TOKEN {{API_KEY}}" \\
       -H "Content-Type: audio/wav" \\
       --data-binary {{AUDIO}}`,
@@ -88,14 +90,15 @@ export const SPEECH_TO_TEXT_PROVIDERS = [
     curl: `curl -X POST "https://api.rev.ai/speechtotext/v1/jobs" \\
       -H "Authorization: Bearer {{API_KEY}}" \\
       -F "media={{AUDIO}}" \\
-      -F "options={{OPTIONS}}"`,
+      -F "options={{OPTIONS}}" \\
+      -F "language=en"`,
     responseContentPath: "id",
     streaming: false,
   },
   {
     id: "ibm-watson-stt",
     name: "IBM Watson Speech-to-Text",
-    curl: `curl -X POST "https://api.us-south.speech-to-text.watson.cloud.ibm.com/v1/recognize" \\
+    curl: `curl -X POST "https://api.us-south.speech-to-text.watson.cloud.ibm.com/v1/recognize?model=en-US_BroadbandModel" \\
       -H "Authorization: Basic {{API_KEY}}" \\
       -H "Content-Type: audio/wav" \\
       --data-binary {{AUDIO}}`,

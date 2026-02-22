@@ -44,8 +44,12 @@ export function AudioVisualizer({ stream, isRecording }: AudioVisualizerProps) {
 
   // Start or stop visualization based on recording state
   useEffect(() => {
-    if (stream && isRecording) {
-      startVisualization();
+    if (isRecording) {
+      if (stream) {
+        startVisualization();
+      } else {
+        startSimulatedVisualization();
+      }
     } else {
       cleanup();
     }
@@ -97,6 +101,54 @@ export function AudioVisualizer({ stream, isRecording }: AudioVisualizerProps) {
     } catch (error) {
       console.error("Error starting visualization:", error);
     }
+  };
+
+  // Simulated visualization when no stream (system audio captured by backend)
+  const startSimulatedVisualization = () => {
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    ctx.scale(dpr, dpr);
+    let time = 0;
+
+    const drawFrame = () => {
+      animationFrameRef.current = requestAnimationFrame(drawFrame);
+      time += 0.04;
+
+      ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
+
+      const barWidth = AUDIO_CONFIG.MIN_BAR_WIDTH;
+      const centerY = canvas.height / dpr / 2;
+      const totalBars = Math.floor(
+        canvas.width / dpr / (barWidth + AUDIO_CONFIG.BAR_SPACING)
+      );
+      let x = 0;
+
+      for (let i = 0; i < totalBars; i++) {
+        const wave =
+          Math.sin(time + i * 0.3) * 0.3 +
+          Math.sin(time * 1.5 + i * 0.15) * 0.15 +
+          0.1;
+        const normalizedHeight = Math.max(0.05, Math.min(0.6, wave));
+        const barHeight = Math.max(
+          AUDIO_CONFIG.MIN_BAR_HEIGHT,
+          normalizedHeight * centerY
+        );
+
+        const intensity =
+          Math.floor(normalizedHeight * AUDIO_CONFIG.COLOR.INTENSITY_RANGE) +
+          AUDIO_CONFIG.COLOR.MIN_INTENSITY;
+        ctx.fillStyle = `rgb(${intensity}, ${intensity}, ${intensity})`;
+        ctx.fillRect(x, centerY - barHeight, barWidth, barHeight);
+        ctx.fillRect(x, centerY, barWidth, barHeight);
+
+        x += barWidth + AUDIO_CONFIG.BAR_SPACING;
+      }
+    };
+
+    drawFrame();
   };
 
   // Calculate the color intensity based on bar height

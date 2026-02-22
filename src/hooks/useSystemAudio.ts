@@ -685,34 +685,17 @@ export function useSystemAudio() {
     });
   }, [startCapture, stopCapture]);
 
-  // Manage microphone stream for audio visualizer
+  // Clean up stream when not capturing (no mic access needed — system audio
+  // is captured by the Rust backend; opening a mic stream here would interfere
+  // with Zoom/Teams/Meet calls by competing for the microphone)
   useEffect(() => {
-    const getStream = async () => {
-      if (capturing) {
-        try {
-          const mediaStream = await navigator.mediaDevices.getUserMedia({
-            audio: {
-              echoCancellation: false,
-              noiseSuppression: false,
-              autoGainControl: false,
-            },
-          });
-          streamRef.current = mediaStream;
-          setStream(mediaStream);
-        } catch (error) {
-          console.error("Failed to get microphone stream:", error);
-        }
-      } else {
-        // Stop all tracks when not capturing
-        if (streamRef.current) {
-          streamRef.current.getTracks().forEach((track) => track.stop());
-          streamRef.current = null;
-        }
-        setStream(null);
+    if (!capturing) {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track: MediaStreamTrack) => track.stop());
+        streamRef.current = null;
       }
-    };
-
-    getStream();
+      setStream(null);
+    }
   }, [capturing]);
 
   useEffect(() => {
