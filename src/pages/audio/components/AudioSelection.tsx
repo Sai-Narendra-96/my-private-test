@@ -7,7 +7,7 @@ import {
   Button,
 } from "@/components";
 import { MicIcon, RefreshCwIcon, HeadphonesIcon } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useApp } from "@/contexts";
 import { STORAGE_KEYS } from "@/config/constants";
 import { safeLocalStorage } from "@/lib/storage";
@@ -30,6 +30,11 @@ export const AudioSelection = () => {
     input: false,
     output: false,
   });
+
+  // Auto-load devices on mount
+  useEffect(() => {
+    loadAudioDevices();
+  }, []);
 
   // Helper function to restore or set default device
   const restoreOrSetDefaultDevice = (
