@@ -33,6 +33,21 @@ jobs:
       - name: Install frontend deps
         run: npm ci
 
+      - name: Validate version sync
+        run: |
+          FRONTEND_VERSION=$(node -p "require('./package.json').version")
+          TAURI_VERSION=$(node -p "JSON.parse(require('fs').readFileSync('./src-tauri/tauri.conf.json', 'utf8')).version")
+          CARGO_VERSION=$(grep -m1 '^version = ' src-tauri/Cargo.toml | sed -E 's/version = \"([^\"]+)\"/\1/')
+
+          echo "package.json version: ${FRONTEND_VERSION}"
+          echo "tauri.conf.json version: ${TAURI_VERSION}"
+          echo "Cargo.toml version: ${CARGO_VERSION}"
+
+          if [ "$FRONTEND_VERSION" != "$TAURI_VERSION" ] || [ "$FRONTEND_VERSION" != "$CARGO_VERSION" ]; then
+            echo "Version mismatch detected. Keep package.json, src-tauri/tauri.conf.json, and src-tauri/Cargo.toml in sync."
+            exit 1
+          fi
+
       - name: Build & publish
         uses: tauri-apps/tauri-action@v0.5.16
         env:

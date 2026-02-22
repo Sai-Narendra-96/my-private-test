@@ -144,9 +144,15 @@ export const AutoSpeechVAD = ({
 
     // Prefer the selected mic but keep it non-strict (`ideal`) so browser/OS
     // can gracefully fall back to a shared/default device if needed.
-    const audioConstraints: MediaTrackConstraints = microphoneDeviceId
-      ? { deviceId: { ideal: microphoneDeviceId } }
-      : { deviceId: "default" };
+    const audioConstraints: MediaTrackConstraints = {
+      ...(microphoneDeviceId
+        ? { deviceId: { ideal: microphoneDeviceId } }
+        : { deviceId: "default" }),
+      channelCount: 1,
+      echoCancellation: true,
+      autoGainControl: true,
+      noiseSuppression: true,
+    };
 
     const initStream = async () => {
       try {

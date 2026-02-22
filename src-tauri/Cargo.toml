@@ -1,6 +1,6 @@
 [package]
 name = "kernel_audio"
-version = "0.2.1"
+version = "0.2.2"
 description = "The Open Source Alternative to Cluely - A lightning-fast, privacy-first AI assistant that works seamlessly during meetings, interviews, and conversations without anyone knowing."
 authors = ["Srikanth Nani <srikanthnani1202@gmail.com>"]
 license = "GPL-3.0"
@@ -11,6 +11,12 @@ readme = "../README.md"
 keywords = ["ai-assistant", "tauri", "desktop-app", "privacy-first", "meeting-assistant"]
 categories = ["gui", "multimedia", "accessibility", "science", "development-tools"]
 edition = "2021"
+
+[lints.rust]
+# `tauri-nspanel` expands Objective-C macros that still emit
+# `cfg(feature = "cargo-clippy")` in some toolchains.
+# Mark that value as expected so CI doesn't spam warnings.
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(feature, values("cargo-clippy"))'] }
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
