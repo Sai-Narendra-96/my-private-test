@@ -22,6 +22,7 @@ export const AudioRecorder = ({
   const [duration, setDuration] = useState(0);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioStreamRef = useRef<MediaStream | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const startTimeRef = useRef<number>(0);
   const durationIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -41,14 +42,16 @@ export const AudioRecorder = ({
       clearTimeout(maxDurationTimeoutRef.current);
       maxDurationTimeoutRef.current = null;
     }
-    if (audioStream) {
-      audioStream.getTracks().forEach((track) => track.stop());
-      setAudioStream(null);
-    }
     if (mediaRecorderRef.current?.state === "recording") {
       mediaRecorderRef.current.stop();
-      mediaRecorderRef.current = null;
     }
+    const stream = mediaRecorderRef.current?.stream || audioStreamRef.current;
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    mediaRecorderRef.current = null;
+    audioStreamRef.current = null;
+    setAudioStream(null);
   };
 
   const startRecording = async () => {
@@ -58,6 +61,7 @@ export const AudioRecorder = ({
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
+      audioStreamRef.current = stream;
       setAudioStream(stream);
 
       const mimeType = MediaRecorder.isTypeSupported("audio/webm")

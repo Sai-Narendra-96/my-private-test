@@ -975,8 +975,19 @@ export const useCompletion = () => {
   }, []);
 
   const toggleRecording = useCallback(() => {
-    setEnableVAD(!enableVAD);
-    setMicOpen(!micOpen);
+    setEnableVAD((prev) => {
+      const next = !prev;
+      setMicOpen(next);
+      return next;
+    });
+  }, []);
+
+  // Keep UI state aligned with recording state so we never leave VAD active
+  // while the mic popover appears closed.
+  useEffect(() => {
+    if (!enableVAD && micOpen) {
+      setMicOpen(false);
+    }
   }, [enableVAD, micOpen]);
 
   // Cleanup abort controller on unmount

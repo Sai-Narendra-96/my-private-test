@@ -16,23 +16,38 @@ export const Audio = ({
     useApp();
 
   const speechProviderStatus = selectedSttProvider.provider;
+  const isProviderConfigured = pluelyApiEnabled || speechProviderStatus;
+
+  const handleOpenChange = (open: boolean) => {
+    setMicOpen(open);
+    if (!open) {
+      setEnableVAD(false);
+    }
+  };
 
   return (
-    <Popover open={micOpen} onOpenChange={setMicOpen}>
+    <Popover open={micOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        {(pluelyApiEnabled || speechProviderStatus) && enableVAD ? (
+        {isProviderConfigured && enableVAD ? (
           <AutoSpeechVAD
             key={selectedAudioDevices.input}
             submit={submit}
             setState={setState}
             setEnableVAD={setEnableVAD}
+            setMicOpen={setMicOpen}
             microphoneDeviceId={selectedAudioDevices.input}
           />
         ) : (
           <Button
             size="icon"
             onClick={() => {
-              setEnableVAD(!enableVAD);
+              if (!isProviderConfigured) {
+                setMicOpen(!micOpen);
+                return;
+              }
+
+              setEnableVAD(true);
+              setMicOpen(true);
             }}
             className="cursor-pointer"
             title="Toggle voice input"
@@ -46,7 +61,7 @@ export const Audio = ({
         align="end"
         side="bottom"
         className={`w-80 p-3 ${
-          pluelyApiEnabled || speechProviderStatus ? "hidden" : ""
+          isProviderConfigured ? "hidden" : ""
         }`}
         sideOffset={8}
       >
