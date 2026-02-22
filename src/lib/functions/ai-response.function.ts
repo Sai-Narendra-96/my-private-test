@@ -287,11 +287,11 @@ export async function* fetchAIResponse(params: {
       }
     }
 
-    const fetchFunction = url?.includes("http") ? fetch : tauriFetch;
-
+    // Always use tauriFetch for external API calls — browser fetch in
+    // WKWebView (macOS) randomly fails with "Load failed" errors.
     let response;
     try {
-      response = await fetchFunction(url, {
+      response = await tauriFetch(url, {
         method: curlJson.method || "POST",
         headers,
         body: curlJson.method === "GET" ? undefined : JSON.stringify(bodyObj),

@@ -185,18 +185,29 @@ export async function fetchSTT(params: STTParams): Promise<string> {
       body = JSON.stringify(deepVariableReplacer(dataObj, allVariables));
     }
 
-    const fetchFunction = url?.includes("http") ? fetch : tauriFetch;
+    // Always use tauriFetch for external API calls — browser fetch in
+    // WKWebView (macOS) randomly fails with "Load failed" errors.
+    // Retry once on transient network failures.
+    const MAX_RETRIES = 1;
+    let response!: Response;
 
-    // Send request
-    let response: Response;
-    try {
-      response = await fetchFunction(url, {
-        method: curlJson.method || "POST",
-        headers: finalHeaders,
-        body: curlJson.method === "GET" ? undefined : body,
-      });
-    } catch (e) {
-      throw new Error(`Network error: ${e instanceof Error ? e.message : e}`);
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+      try {
+        response = await tauriFetch(url, {
+          method: curlJson.method || "POST",
+          headers: finalHeaders,
+          body: curlJson.method === "GET" ? undefined : body,
+        });
+        break;
+      } catch (e) {
+        if (attempt >= MAX_RETRIES) {
+          throw new Error(
+            `Network error: ${e instanceof Error ? e.message : e}`
+          );
+        }
+        // Brief pause before retry
+        await new Promise((r) => setTimeout(r, 500));
+      }
     }
 
     if (!response.ok) {

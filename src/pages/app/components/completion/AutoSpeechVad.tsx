@@ -24,18 +24,15 @@ const AutoSpeechVADInternal = ({
   const [isTranscribing, setIsTranscribing] = useState(false);
   const { selectedSttProvider, allSttProviders } = useApp();
 
+  // Use default audio processing (shared mode) so the mic can coexist with
+  // other apps like Zoom/Teams/Meet.  Disabling echoCancellation etc. can
+  // cause macOS to grant exclusive mic access, blocking other apps.
   const audioConstraints: MediaTrackConstraints = microphoneDeviceId
     ? {
         deviceId: { exact: microphoneDeviceId },
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false,
       }
     : {
         deviceId: "default",
-        echoCancellation: false,
-        noiseSuppression: false,
-        autoGainControl: false,
       };
 
   const vad = useMicVAD({

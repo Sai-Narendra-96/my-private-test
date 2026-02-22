@@ -61,17 +61,12 @@ export const AudioSelection = () => {
   const loadAudioDevices = async () => {
     setIsLoadingDevices(true);
     try {
-      // Request microphone permission first
+      // Request microphone permission to enumerate devices, then release
+      // immediately so we don't block other apps (Zoom, Teams, etc.)
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false,
-        },
+        audio: true,
       });
-      setTimeout(async () => {
-        stream.getTracks().forEach((track) => track.stop());
-      }, 2000);
+      stream.getTracks().forEach((track) => track.stop());
 
       // Enumerate all audio devices
       const allDevices = await navigator.mediaDevices.enumerateDevices();

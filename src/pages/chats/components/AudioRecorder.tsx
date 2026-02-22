@@ -53,12 +53,10 @@ export const AudioRecorder = ({
 
   const startRecording = async () => {
     try {
+      // Use default audio processing (shared mode) so the mic can coexist
+      // with other apps like Zoom/Teams/Meet
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: false,
-          noiseSuppression: false,
-          autoGainControl: false,
-        },
+        audio: true,
       });
       setAudioStream(stream);
 
