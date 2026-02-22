@@ -5,6 +5,10 @@ import { LoaderCircleIcon, MicIcon, MicOffIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components";
 import { useApp } from "@/contexts";
+import {
+  acquireSharedMicrophone,
+  releaseSharedMicrophone,
+} from "@/lib/audio/shared-mic";
 import { floatArrayToWav } from "@/lib/utils";
 import { shouldUsePluelyAPI } from "@/lib/functions/pluely.api";
 
@@ -142,27 +146,13 @@ export const AutoSpeechVAD = ({
     let cancelled = false;
     setStream(null);
 
-    // Prefer the selected mic but keep it non-strict (`ideal`) so browser/OS
-    // can gracefully fall back to a shared/default device if needed.
-    const audioConstraints: MediaTrackConstraints = {
-      ...(microphoneDeviceId
-        ? { deviceId: { ideal: microphoneDeviceId } }
-        : { deviceId: "default" }),
-      channelCount: 1,
-      echoCancellation: true,
-      autoGainControl: true,
-      noiseSuppression: true,
-    };
-
     const initStream = async () => {
       try {
         setInitializing(true);
-        const acquiredStream = await navigator.mediaDevices.getUserMedia({
-          audio: audioConstraints,
-        });
+        const acquiredStream = await acquireSharedMicrophone(microphoneDeviceId);
 
         if (cancelled) {
-          acquiredStream.getTracks().forEach((track) => track.stop());
+          releaseSharedMicrophone(acquiredStream);
           return;
         }
 
@@ -189,7 +179,7 @@ export const AutoSpeechVAD = ({
     return () => {
       cancelled = true;
       if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
+        releaseSharedMicrophone(streamRef.current);
         streamRef.current = null;
       }
     };

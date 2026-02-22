@@ -3,6 +3,10 @@ import { Button } from "@/components";
 import { AudioVisualizer } from "@/pages/app/components/speech/audio-visualizer";
 import { shouldUsePluelyAPI, fetchSTT } from "@/lib";
 import { useApp } from "@/contexts";
+import {
+  acquireSharedMicrophone,
+  releaseSharedMicrophone,
+} from "@/lib/audio/shared-mic";
 import { StopCircle, Send } from "lucide-react";
 
 interface AudioRecorderProps {
@@ -16,7 +20,8 @@ export const AudioRecorder = ({
   onTranscriptionComplete,
   onCancel,
 }: AudioRecorderProps) => {
-  const { selectedSttProvider, allSttProviders } = useApp();
+  const { selectedSttProvider, allSttProviders, selectedAudioDevices } =
+    useApp();
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -47,7 +52,7 @@ export const AudioRecorder = ({
     }
     const stream = mediaRecorderRef.current?.stream || audioStreamRef.current;
     if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
+      releaseSharedMicrophone(stream);
     }
     mediaRecorderRef.current = null;
     audioStreamRef.current = null;
@@ -56,11 +61,7 @@ export const AudioRecorder = ({
 
   const startRecording = async () => {
     try {
-      // Use default audio processing (shared mode) so the mic can coexist
-      // with other apps like Zoom/Teams/Meet
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
+      const stream = await acquireSharedMicrophone(selectedAudioDevices.input);
       audioStreamRef.current = stream;
       setAudioStream(stream);
 
